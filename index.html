@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Neon Arcade - 6 Game Collection</title>
+  <title>Neon Arcade - 6 Games</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -16,9 +16,9 @@
     }
 
     :root {
-      --bg-dark: #060813;
-      --card-bg: rgba(14, 19, 36, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
+      --bg-dark: #070914;
+      --card-bg: rgba(15, 21, 40, 0.75);
+      --card-border: rgba(255, 255, 255, 0.09);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -26,9 +26,9 @@
     body {
       background: var(--bg-dark);
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
-        radial-gradient(circle at 10% 40%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 70%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 15% 75%, rgba(56, 189, 248, 0.08) 0%, transparent 40%);
       min-height: 100vh;
       font-family: "Outfit", -apple-system, sans-serif;
       color: var(--text-main);
@@ -36,7 +36,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 32px 16px 60px;
+      padding: 16px 12px 32px;
     }
 
     #bg-canvas {
@@ -53,143 +53,124 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1080px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 36px;
+      gap: 18px;
     }
 
-    /* ── Header ── */
+    /* ── Compact Header ── */
     header {
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 4px;
+      padding-top: 4px;
     }
 
-    .hub-badge {
+    .hub-tag {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(129, 140, 248, 0.3);
+      border: 1px solid rgba(129, 140, 248, 0.25);
       color: #a5b4fc;
-      padding: 6px 16px;
+      padding: 4px 12px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      backdrop-filter: blur(12px);
     }
 
-    .hub-badge .dot {
-      width: 7px;
-      height: 7px;
+    .hub-tag .dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #4ade80;
-      box-shadow: 0 0 8px #4ade80;
-      animation: pulseDot 2s infinite ease-in-out;
-    }
-
-    @keyframes pulseDot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
+      box-shadow: 0 0 6px #4ade80;
     }
 
     h1 {
-      font-size: clamp(32px, 6vw, 54px);
+      font-size: clamp(24px, 5.5vw, 42px);
       font-weight: 900;
       letter-spacing: -0.5px;
-      line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 70%, #818cf8 100%);
+      background: linear-gradient(135deg, #ffffff 40%, #a5b4fc 80%, #818cf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 40px rgba(99, 102, 241, 0.25);
     }
 
     p.subtitle {
-      font-size: clamp(14px, 2.5vw, 17px);
-      color: var(--text-muted);
-      max-width: 620px;
-      line-height: 1.55;
-    }
-
-    .stats-bar {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .stat-pill {
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 8px 16px;
-      border-radius: 12px;
       font-size: 12px;
-      font-weight: 600;
-      color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      backdrop-filter: blur(10px);
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
     }
 
-    .stat-pill b {
-      color: #fff;
-      font-family: "Space Mono", monospace;
-    }
-
-    /* ── Games Grid ── */
+    /* ── Responsive Games Grid (2-Col on Mobile, 3-Col on Desktop) ── */
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 28px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
       width: 100%;
+      margin-top: 4px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 820px) {
       .games-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
       }
     }
 
-    /* ── Game Card ── */
+    @media (max-width: 360px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    /* ── Clickable Compact Game Card ── */
     .game-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 24px;
+      border-radius: 18px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       position: relative;
     }
 
     .game-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(255, 255, 255, 0.22);
-      box-shadow: 
-        0 24px 60px rgba(0, 0, 0, 0.6),
-        0 0 35px var(--glow-color, rgba(99, 102, 241, 0.2));
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px var(--glow-color, rgba(99, 102, 241, 0.25));
     }
 
+    .game-card:active {
+      transform: scale(0.98);
+    }
+
+    /* Card Visual Preview Canvas */
     .card-preview {
       position: relative;
-      height: 190px;
+      height: 125px;
       width: 100%;
       background: #090c18;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+
+    @media (min-width: 821px) {
+      .card-preview {
+        height: 145px;
+      }
     }
 
     .preview-canvas {
@@ -198,129 +179,86 @@
       display: block;
     }
 
-    .card-badge {
+    .genre-badge {
       position: absolute;
-      top: 14px;
-      right: 14px;
-      background: rgba(6, 8, 16, 0.75);
+      top: 8px;
+      right: 8px;
+      background: rgba(6, 8, 16, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
       text-transform: uppercase;
-      color: #fff;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(8px);
     }
 
+    /* Card Body */
     .card-body {
-      padding: 20px 22px 24px;
+      padding: 10px 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 6px;
       flex: 1;
+      justify-content: space-between;
     }
 
-    .card-header-row {
+    .title-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
+      gap: 6px;
     }
 
     .game-title {
-      font-size: 21px;
+      font-size: 15px;
       font-weight: 800;
       color: #fff;
-      letter-spacing: 0.2px;
-    }
-
-    .tags-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 10px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 6px;
-      color: var(--text-muted);
-    }
-
-    .game-desc {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.5;
-      flex: 1;
-    }
-
-    .controls-box {
-      background: rgba(6, 8, 18, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 8px 12px;
-      font-size: 11px;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .controls-box span.lbl {
-      font-weight: 700;
-      color: #64748b;
-      letter-spacing: 0.5px;
-    }
-
-    .controls-box span.keys {
-      color: #cbd5e1;
-      font-weight: 600;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
-    .play-btn {
+    .tagline {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Compact Play Pill */
+    .play-pill {
       margin-top: 4px;
-      width: 100%;
       background: var(--btn-gradient, linear-gradient(135deg, #6366f1, #4f46e5));
-      border: none;
       color: #fff;
-      padding: 12px 20px;
-      border-radius: 14px;
-      font-family: "Outfit", sans-serif;
-      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
+      letter-spacing: 0.4px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
+      box-shadow: 0 2px 10px var(--btn-shadow, rgba(99, 102, 241, 0.35));
       transition: all 0.2s ease;
-      box-shadow: 0 4px 20px var(--btn-shadow, rgba(99, 102, 241, 0.4));
     }
 
-    .play-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 28px var(--btn-shadow, rgba(99, 102, 241, 0.6));
-      filter: brightness(1.1);
+    .game-card:hover .play-pill {
+      filter: brightness(1.15);
+      box-shadow: 0 4px 14px var(--btn-shadow, rgba(99, 102, 241, 0.5));
     }
 
-    .play-btn:active {
-      transform: scale(0.98);
-    }
-
+    /* ── Footer ── */
     footer {
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       color: #475569;
-      margin-top: 20px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -329,212 +267,125 @@
 <canvas id="bg-canvas"></canvas>
 
 <div class="container">
-  <!-- Hub Header -->
+  <!-- Minimal Header -->
   <header>
-    <div class="hub-badge">
+    <div class="hub-tag">
       <span class="dot"></span>
-      ✨ Instant Play • 6 Retro & Modern Classics
+      Instant Arcade
     </div>
-    <h1>NEON ARCADE HUB</h1>
-    <p class="subtitle">
-      Pick a game, beat the high score, and enjoy fast, responsive retro arcade fun with full sound effects and zero loading times.
-    </p>
-
-    <div class="stats-bar">
-      <div class="stat-pill">🎮 <b>6 Classic Games</b></div>
-      <div class="stat-pill">⚡ <b>Instant Play</b></div>
-      <div class="stat-pill">🔊 <b>Arcade Audio</b></div>
-      <div class="stat-pill">📱 <b>Desktop & Mobile Ready</b></div>
-    </div>
+    <h1>NEON ARCADE</h1>
+    <p class="subtitle">6 classic games • instant play • sound enabled</p>
   </header>
 
-  <!-- Game Cards Grid (6 Games) -->
+  <!-- 6 Game Cards Grid (2-Column on Mobile, 3-Column on Desktop) -->
   <main class="games-grid">
 
-    <!-- 1. Galaxy Defender (Space Invaders) -->
-    <div class="game-card" style="--glow-color: rgba(56, 189, 248, 0.35); --btn-gradient: linear-gradient(135deg, #38bdf8, #0284c7); --btn-shadow: rgba(56, 189, 248, 0.45);">
+    <!-- 1. Galaxy Defender -->
+    <a href="space_invaders.html" class="game-card" style="--glow-color: rgba(56, 189, 248, 0.35); --btn-gradient: linear-gradient(135deg, #38bdf8, #0284c7); --btn-shadow: rgba(56, 189, 248, 0.4);">
       <div class="card-preview">
         <canvas id="prev-invaders" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">Swarm Shooter</span>
+        <span class="genre-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">Invaders</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🚀 Galaxy Defender</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🚀 Galaxy Defender</h2>
+          </div>
+          <p class="tagline">Defend Earth from alien swarm waves & mystery UFOs.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Alien Swarm</span>
-          <span class="tag">Defense Shields</span>
-          <span class="tag">Mystery UFO</span>
-          <span class="tag">Power-Ups</span>
-        </div>
-        <p class="game-desc">
-          Defend Earth against relentless waves of marching aliens. Take cover behind energy shields, blast high-value mystery UFOs, and power up your lasers to survive the invasion.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">◀▶ Move • Space Fire • P Pause • M Mute</span>
-        </div>
-        <a href="space_invaders.html" class="play-btn">
-          <span>Defend Galaxy</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
     <!-- 2. Asteroids -->
-    <div class="game-card" style="--glow-color: rgba(168, 85, 247, 0.35); --btn-gradient: linear-gradient(135deg, #c084fc, #9333ea); --btn-shadow: rgba(192, 132, 252, 0.45);">
+    <a href="asteroids.html" class="game-card" style="--glow-color: rgba(192, 132, 252, 0.35); --btn-gradient: linear-gradient(135deg, #c084fc, #9333ea); --btn-shadow: rgba(192, 132, 252, 0.4);">
       <div class="card-preview">
         <canvas id="prev-asteroids" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);">Space Vector</span>
+        <span class="genre-badge" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);">Vector</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🛸 Asteroids</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🛸 Asteroids</h2>
+          </div>
+          <p class="tagline">Blast deep space rocks, fight alien saucers & warp.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Space Combat</span>
-          <span class="tag">Alien Dogfights</span>
-          <span class="tag">Hyperspace Warp</span>
-          <span class="tag">Explosions</span>
-        </div>
-        <p class="game-desc">
-          Pilot your starship through deep space asteroid storms. Blast giant boulders into fragments, outmaneuver hostile alien saucers, and warp to safety when surrounded.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">▲ Thrust • ◀▶ Steer • Space Fire • H Warp • P Pause</span>
-        </div>
-        <a href="asteroids.html" class="play-btn">
-          <span>Launch Asteroids</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
     <!-- 3. Brick Blaster -->
-    <div class="game-card" style="--glow-color: rgba(249, 199, 79, 0.35); --btn-gradient: linear-gradient(135deg, #fbbf24, #d97706); --btn-shadow: rgba(251, 191, 36, 0.45);">
+    <a href="bricks.html" class="game-card" style="--glow-color: rgba(251, 191, 36, 0.35); --btn-gradient: linear-gradient(135deg, #fbbf24, #d97706); --btn-shadow: rgba(251, 191, 36, 0.4);">
       <div class="card-preview">
         <canvas id="prev-bricks" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.4);">Breakout Action</span>
+        <span class="genre-badge" style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.4);">Breakout</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🧱 Brick Blaster</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🧱 Brick Blaster</h2>
+          </div>
+          <p class="tagline">Break neon bricks with multi-ball & paddle powers.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Paddle Action</span>
-          <span class="tag">Multi-Ball</span>
-          <span class="tag">Super Laser</span>
-          <span class="tag">Slow-Motion</span>
-        </div>
-        <p class="game-desc">
-          The ultimate brick-breaking challenge. Smash through colorful formations, catch falling power-ups like multi-ball and paddle extenders, and rack up huge combo scores.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">Mouse / Touch / ◀▶ Move • Space Launch • P Pause</span>
-        </div>
-        <a href="bricks.html" class="play-btn">
-          <span>Play Brick Blaster</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
     <!-- 4. Neon Snake -->
-    <div class="game-card" style="--glow-color: rgba(74, 222, 128, 0.35); --btn-gradient: linear-gradient(135deg, #4ade80, #16a34a); --btn-shadow: rgba(74, 222, 128, 0.45);">
+    <a href="snake.html" class="game-card" style="--glow-color: rgba(74, 222, 128, 0.35); --btn-gradient: linear-gradient(135deg, #4ade80, #16a34a); --btn-shadow: rgba(74, 222, 128, 0.4);">
       <div class="card-preview">
         <canvas id="prev-snake" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">Speed & Reflexes</span>
+        <span class="genre-badge" style="color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">Reflex</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🐍 Neon Snake</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🐍 Neon Snake</h2>
+          </div>
+          <p class="tagline">Hunt energy pellets & grow your cyber tail fast.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Speed Run</span>
-          <span class="tag">Glowing Grid</span>
-          <span class="tag">Combos</span>
-          <span class="tag">Reflex Test</span>
-        </div>
-        <p class="game-desc">
-          Guide your glowing serpent across the cyber grid. Hunt energy pellets, grow your tail, and test your reflexes as the speed ramps up with every bite.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">Arrow Keys / WASD / Touch D-Pad • P Pause</span>
-        </div>
-        <a href="snake.html" class="play-btn">
-          <span>Slither into Snake</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
     <!-- 5. Modern Tetris -->
-    <div class="game-card" style="--glow-color: rgba(99, 102, 241, 0.35); --btn-gradient: linear-gradient(135deg, #818cf8, #4f46e5); --btn-shadow: rgba(99, 102, 241, 0.45);">
+    <a href="tetris.html" class="game-card" style="--glow-color: rgba(99, 102, 241, 0.35); --btn-gradient: linear-gradient(135deg, #818cf8, #4f46e5); --btn-shadow: rgba(99, 102, 241, 0.4);">
       <div class="card-preview">
         <canvas id="prev-tetris" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #818cf8; border-color: rgba(129, 140, 248, 0.4);">Block Puzzle</span>
+        <span class="genre-badge" style="color: #818cf8; border-color: rgba(129, 140, 248, 0.4);">Puzzle</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🕹️ Modern Tetris</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🕹️ Modern Tetris</h2>
+          </div>
+          <p class="tagline">Fast block stacking with hold queue & hard drops.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Block Stacker</span>
-          <span class="tag">Ghost Drop</span>
-          <span class="tag">Hold Piece</span>
-          <span class="tag">Line Clears</span>
-        </div>
-        <p class="game-desc">
-          Fast, smooth, and endlessly addictive block stacking. Swap pieces into the hold queue, use drop guides for instant placement, and clear multiple lines for massive points.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">◀▶ Move • ▲/Z Rotate • Space Hard Drop • C Hold</span>
-        </div>
-        <a href="tetris.html" class="play-btn">
-          <span>Stack in Tetris</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
     <!-- 6. Trash Toss 3D -->
-    <div class="game-card" style="--glow-color: rgba(244, 63, 94, 0.35); --btn-gradient: linear-gradient(135deg, #fb7185, #e11d48); --btn-shadow: rgba(251, 113, 133, 0.45);">
+    <a href="trash_toss.html" class="game-card" style="--glow-color: rgba(244, 63, 94, 0.35); --btn-gradient: linear-gradient(135deg, #fb7185, #e11d48); --btn-shadow: rgba(251, 113, 133, 0.4);">
       <div class="card-preview">
         <canvas id="prev-trash" class="preview-canvas"></canvas>
-        <span class="card-badge" style="color: #fb7185; border-color: rgba(251, 113, 133, 0.4);">3D Aim</span>
+        <span class="genre-badge" style="color: #fb7185; border-color: rgba(251, 113, 133, 0.4);">3D Physics</span>
       </div>
       <div class="card-body">
-        <div class="card-header-row">
-          <h2 class="game-title">🗑️ Trash Toss 3D</h2>
+        <div>
+          <div class="title-row">
+            <h2 class="game-title">🗑️ Trash Toss 3D</h2>
+          </div>
+          <p class="tagline">Flick paper balls across wind & sink trick shots.</p>
         </div>
-        <div class="tags-row">
-          <span class="tag">Target Aim</span>
-          <span class="tag">Wind Challenge</span>
-          <span class="tag">Flick Shots</span>
-          <span class="tag">Score Streaks</span>
-        </div>
-        <p class="game-desc">
-          The classic office wastebasket game. Gauge the shifting crosswinds, flick paper balls with precision aim, and build long winning streaks with trick bank shots.
-        </p>
-        <div class="controls-box">
-          <span class="lbl">KEYS:</span>
-          <span class="keys">Click/Touch & Drag to Aim • Release to Flick • R Reset</span>
-        </div>
-        <a href="trash_toss.html" class="play-btn">
-          <span>Toss Some Paper</span>
-          <span>▶</span>
-        </a>
+        <div class="play-pill">PLAY ▶</div>
       </div>
-    </div>
+    </a>
 
   </main>
 
   <footer>
-    Neon Arcade Hub • Play Anytime, Anywhere • Ready for Keyboard, Mouse & Touch
+    Neon Arcade • Tap any game to play
   </footer>
 </div>
 
@@ -548,14 +399,14 @@ function resizeBg() {
   bgCanvas.width = window.innerWidth;
   bgCanvas.height = window.innerHeight;
   bgStars = [];
-  const count = Math.floor((window.innerWidth * window.innerHeight) / 9000);
+  const count = Math.floor((window.innerWidth * window.innerHeight) / 10000);
   for (let i = 0; i < count; i++) {
     bgStars.push({
       x: Math.random() * bgCanvas.width,
       y: Math.random() * bgCanvas.height,
-      size: 0.8 + Math.random() * 1.5,
-      alpha: 0.2 + Math.random() * 0.7,
-      speed: 0.1 + Math.random() * 0.3
+      size: 0.8 + Math.random() * 1.4,
+      alpha: 0.2 + Math.random() * 0.6,
+      speed: 0.1 + Math.random() * 0.25
     });
   }
 }
@@ -582,7 +433,7 @@ function initCardPreviews() {
     const c = document.getElementById(id);
     if (!c) return null;
     const rect = c.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     c.width = rect.width * dpr;
     c.height = rect.height * dpr;
     const ctx = c.getContext("2d");
@@ -590,79 +441,73 @@ function initCardPreviews() {
     return { c, ctx, w: rect.width, h: rect.height };
   }
 
-  const pInv = setupPreview("prev-invaders");
-  const pAst = setupPreview("prev-asteroids");
-  const pBrk = setupPreview("prev-bricks");
-  const pSnk = setupPreview("prev-snake");
-  const pTet = setupPreview("prev-tetris");
-  const pTrs = setupPreview("prev-trash");
+  let pInv = setupPreview("prev-invaders");
+  let pAst = setupPreview("prev-asteroids");
+  let pBrk = setupPreview("prev-bricks");
+  let pSnk = setupPreview("prev-snake");
+  let pTet = setupPreview("prev-tetris");
+  let pTrs = setupPreview("prev-trash");
+
+  window.addEventListener("resize", () => {
+    pInv = setupPreview("prev-invaders");
+    pAst = setupPreview("prev-asteroids");
+    pBrk = setupPreview("prev-bricks");
+    pSnk = setupPreview("prev-snake");
+    pTet = setupPreview("prev-tetris");
+    pTrs = setupPreview("prev-trash");
+  });
 
   let t = 0;
 
   function renderPreviews() {
     t += 0.02;
 
-    // 1. Galaxy Defender (Space Invaders) Preview
+    // 1. Galaxy Defender Preview
     if (pInv) {
       const { ctx, w, h } = pInv;
       ctx.fillStyle = "#070913";
       ctx.fillRect(0, 0, w, h);
 
-      // Grid
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.05)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < w; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-
-      // Mystery UFO
-      const ufoX = (w * 0.5 + Math.sin(t * 1.2) * (w * 0.35));
+      // UFO
+      const ufoX = (w * 0.5 + Math.sin(t * 1.2) * (w * 0.32));
       ctx.strokeStyle = "#fbbf24";
       ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
       ctx.beginPath();
-      ctx.ellipse(ufoX, 22, 14, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(ufoX, 16, 11, 4, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      // Invaders Swarm
-      const swarmShift = Math.sin(t * 2) * 18;
+      // Swarm
+      const swarmShift = Math.sin(t * 2) * 12;
       const invCols = ["#f43f5e", "#38bdf8", "#4ade80"];
       for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 6; c++) {
-          const ix = w * 0.22 + c * 32 + swarmShift;
-          const iy = 46 + r * 22;
+        for (let c = 0; c < 5; c++) {
+          const ix = w * 0.24 + c * 24 + swarmShift;
+          const iy = 34 + r * 18;
           ctx.strokeStyle = invCols[r];
-          ctx.fillStyle = invCols[r];
           ctx.beginPath();
           if (r === 0) {
-            ctx.arc(ix, iy, 5, Math.PI, 0);
-            ctx.lineTo(ix + 5, iy + 4);
-            ctx.lineTo(ix - 5, iy + 4);
+            ctx.arc(ix, iy, 4, Math.PI, 0);
+            ctx.lineTo(ix + 4, iy + 3); ctx.lineTo(ix - 4, iy + 3);
           } else if (r === 1) {
-            ctx.roundRect(ix - 6, iy - 4, 12, 8, 2);
+            ctx.roundRect(ix - 5, iy - 3, 10, 6, 1);
           } else {
-            ctx.ellipse(ix, iy, 7, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(ix, iy, 5, 3, 0, 0, Math.PI * 2);
           }
           ctx.stroke();
         }
       }
 
-      // Defense Shields
-      for (let i = 0; i < 3; i++) {
-        const sx = w * 0.25 + i * (w * 0.25);
-        ctx.fillStyle = "#38bdf8";
-        ctx.fillRect(sx - 12, h - 55, 24, 10);
-      }
-
-      // Player Cannon & Laser
-      const px = w * 0.5 + Math.sin(t * 1.5) * 35;
+      // Player Cannon
+      const px = w * 0.5 + Math.sin(t * 1.5) * 25;
       ctx.fillStyle = "#38bdf8";
-      ctx.fillRect(px - 10, h - 26, 20, 8);
-      ctx.fillRect(px - 2, h - 32, 4, 6);
+      ctx.fillRect(px - 8, h - 18, 16, 6);
+      ctx.fillRect(px - 1.5, h - 23, 3, 5);
 
       // Laser
       ctx.fillStyle = "#fff";
-      ctx.shadowColor = "#38bdf8";
-      ctx.shadowBlur = 8;
-      ctx.fillRect(px - 1, h - 75 + Math.sin(t * 6) * 15, 2, 10);
+      ctx.shadowColor = "#38bdf8"; ctx.shadowBlur = 6;
+      ctx.fillRect(px - 1, h - 55 + Math.sin(t * 6) * 12, 2, 7);
       ctx.shadowBlur = 0;
     }
 
@@ -672,22 +517,17 @@ function initCardPreviews() {
       ctx.fillStyle = "#060814";
       ctx.fillRect(0, 0, w, h);
 
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.08)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-
       const ast = [
-        { x: w * 0.25, y: h * 0.45, r: 22, c: "#38bdf8", rot: t * 0.8 },
-        { x: w * 0.82, y: h * 0.35, r: 16, c: "#a855f7", rot: -t * 0.6 },
-        { x: w * 0.65, y: h * 0.75, r: 12, c: "#f43f5e", rot: t * 1.2 },
+        { x: w * 0.25, y: h * 0.45, r: 16, c: "#38bdf8", rot: t * 0.8 },
+        { x: w * 0.82, y: h * 0.35, r: 13, c: "#a855f7", rot: -t * 0.6 },
+        { x: w * 0.65, y: h * 0.75, r: 9, c: "#f43f5e", rot: t * 1.2 },
       ];
       ast.forEach(a => {
         ctx.save();
         ctx.translate(a.x, a.y);
         ctx.rotate(a.rot);
         ctx.strokeStyle = a.c;
-        ctx.lineWidth = 2;
-        ctx.fillStyle = "rgba(255,255,255,0.03)";
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         for (let i = 0; i < 8; i++) {
           const ang = (i / 8) * Math.PI * 2;
@@ -696,7 +536,6 @@ function initCardPreviews() {
           if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         }
         ctx.closePath();
-        ctx.fill();
         ctx.stroke();
         ctx.restore();
       });
@@ -706,24 +545,17 @@ function initCardPreviews() {
       ctx.translate(sx, sy);
       ctx.rotate(-Math.PI / 4 + Math.sin(t) * 0.1);
       ctx.strokeStyle = "#c084fc";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.fillStyle = "rgba(192, 132, 252, 0.15)";
       ctx.beginPath();
-      ctx.moveTo(14, 0);
-      ctx.lineTo(-10, -8);
-      ctx.lineTo(-6, 0);
-      ctx.lineTo(-10, 8);
+      ctx.moveTo(11, 0); ctx.lineTo(-8, -6); ctx.lineTo(-5, 0); ctx.lineTo(-8, 6);
       ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
       ctx.restore();
 
       ctx.fillStyle = "#fff";
-      ctx.shadowColor = "#c084fc";
-      ctx.shadowBlur = 10;
-      ctx.beginPath();
-      ctx.arc(sx + 28, sy - 28, 3, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.shadowColor = "#c084fc"; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(sx + 20, sy - 20, 2.5, 0, Math.PI * 2); ctx.fill();
       ctx.shadowBlur = 0;
     }
 
@@ -734,35 +566,30 @@ function initCardPreviews() {
       ctx.fillRect(0, 0, w, h);
 
       const colors = ["#e74c3c", "#f9c74f", "#2ecc71", "#3498db", "#9b59b6"];
-      const bw = 32, bh = 14, pad = 5;
-      const startX = (w - (7 * (bw + pad))) / 2;
+      const bw = 24, bh = 10, pad = 4;
+      const startX = (w - (6 * (bw + pad))) / 2;
       for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 7; c++) {
-          if ((r === 2 && (c === 2 || c === 3))) continue;
+        for (let c = 0; c < 6; c++) {
+          if (r === 2 && (c === 2 || c === 3)) continue;
           ctx.fillStyle = colors[(r + c) % colors.length];
           ctx.beginPath();
-          ctx.roundRect(startX + c * (bw + pad), 25 + r * (bh + pad), bw, bh, 3);
+          ctx.roundRect(startX + c * (bw + pad), 18 + r * (bh + pad), bw, bh, 2);
           ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.25)";
-          ctx.fillRect(startX + c * (bw + pad) + 2, 25 + r * (bh + pad) + 1, bw - 4, 3);
         }
       }
 
-      const px = w * 0.5 + Math.sin(t * 1.5) * 45;
-      const pw = 68, ph = 10;
+      const px = w * 0.5 + Math.sin(t * 1.5) * 35;
+      const pw = 48, ph = 7;
       ctx.fillStyle = "#fbbf24";
       ctx.beginPath();
-      ctx.roundRect(px - pw / 2, h - 35, pw, ph, 4);
+      ctx.roundRect(px - pw / 2, h - 22, pw, ph, 3);
       ctx.fill();
 
-      const bx = px + Math.cos(t * 2) * 20;
-      const by = h - 60 - Math.abs(Math.sin(t * 2.5)) * 40;
+      const bx = px + Math.cos(t * 2) * 15;
+      const by = h - 45 - Math.abs(Math.sin(t * 2.5)) * 25;
       ctx.fillStyle = "#fff";
-      ctx.shadowColor = "#fbbf24";
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(bx, by, 5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.shadowColor = "#fbbf24"; ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(bx, by, 4, 0, Math.PI * 2); ctx.fill();
       ctx.shadowBlur = 0;
     }
 
@@ -772,34 +599,26 @@ function initCardPreviews() {
       ctx.fillStyle = "#0b101b";
       ctx.fillRect(0, 0, w, h);
 
-      ctx.strokeStyle = "rgba(74, 222, 128, 0.06)";
-      ctx.lineWidth = 1;
-      const gs = 16;
-      for (let x = 0; x < w; x += gs) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = 0; y < h; y += gs) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-
       const segs = [
-        { x: 110, y: 85 }, { x: 126, y: 85 }, { x: 142, y: 85 },
-        { x: 158, y: 85 }, { x: 158, y: 101 }, { x: 158, y: 117 },
-        { x: 174, y: 117 }, { x: 190, y: 117 }, { x: 206, y: 117 }
+        { x: 50, y: 55 }, { x: 62, y: 55 }, { x: 74, y: 55 },
+        { x: 86, y: 55 }, { x: 86, y: 67 }, { x: 86, y: 79 },
+        { x: 98, y: 79 }, { x: 110, y: 79 }, { x: 122, y: 79 }
       ];
       segs.forEach((s, idx) => {
         const isHead = idx === segs.length - 1;
         ctx.fillStyle = isHead ? "#86efac" : "#22c55e";
-        ctx.shadowColor = "#4ade80";
-        ctx.shadowBlur = isHead ? 12 : 4;
+        ctx.shadowColor = "#4ade80"; ctx.shadowBlur = isHead ? 8 : 2;
         ctx.beginPath();
-        ctx.roundRect(s.x, s.y, 14, 14, 4);
+        ctx.roundRect(s.x, s.y, 10, 10, 2);
         ctx.fill();
       });
       ctx.shadowBlur = 0;
 
       const pulse = 1 + Math.sin(t * 4) * 0.2;
       ctx.fillStyle = "#f43f5e";
-      ctx.shadowColor = "#f43f5e";
-      ctx.shadowBlur = 14;
+      ctx.shadowColor = "#f43f5e"; ctx.shadowBlur = 10;
       ctx.beginPath();
-      ctx.arc(254, 124, 6 * pulse, 0, Math.PI * 2);
+      ctx.arc(155, 84, 4.5 * pulse, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
     }
@@ -810,33 +629,30 @@ function initCardPreviews() {
       ctx.fillStyle = "#090b14";
       ctx.fillRect(0, 0, w, h);
 
-      const ts = 18;
-      const ox = (w - (10 * ts)) / 2;
-      const oy = h - 110;
+      const ts = 13;
+      const ox = (w - (8 * ts)) / 2;
+      const oy = h - 70;
       const tCols = ["#38bdf8", "#fbbf24", "#c084fc", "#4ade80", "#fb7185", "#3b82f6"];
 
-      for (let r = 0; r < 5; r++) {
-        for (let c = 0; c < 10; c++) {
-          if (r === 4 && (c === 4 || c === 5)) continue;
-          if (r === 3 && (c < 2 || c > 7)) continue;
-          if (r < 3 && (c % 3 !== 0)) continue;
-          ctx.fillStyle = tCols[(r * 3 + c) % tCols.length];
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (r === 3 && (c === 3 || c === 4)) continue;
+          if (r === 2 && (c < 2 || c > 5)) continue;
+          if (r < 2 && (c % 2 !== 0)) continue;
+          ctx.fillStyle = tCols[(r * 2 + c) % tCols.length];
           ctx.beginPath();
-          ctx.roundRect(ox + c * ts + 1, oy + r * ts + 1, ts - 2, ts - 2, 3);
+          ctx.roundRect(ox + c * ts + 1, oy + r * ts + 1, ts - 2, ts - 2, 2);
           ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.2)";
-          ctx.fillRect(ox + c * ts + 2, oy + r * ts + 2, ts - 4, 3);
         }
       }
 
-      const fallY = 30 + (Math.sin(t) * 0.5 + 0.5) * 40;
+      const fallY = 18 + (Math.sin(t) * 0.5 + 0.5) * 26;
       ctx.fillStyle = "#818cf8";
-      ctx.shadowColor = "#818cf8";
-      ctx.shadowBlur = 10;
+      ctx.shadowColor = "#818cf8"; ctx.shadowBlur = 8;
       const tPiece = [[1, 0], [0, 1], [1, 1], [2, 1]];
       tPiece.forEach(([px, py]) => {
         ctx.beginPath();
-        ctx.roundRect(ox + (4 + px) * ts + 1, fallY + py * ts + 1, ts - 2, ts - 2, 3);
+        ctx.roundRect(ox + (3 + px) * ts + 1, fallY + py * ts + 1, ts - 2, ts - 2, 2);
         ctx.fill();
       });
       ctx.shadowBlur = 0;
@@ -848,37 +664,34 @@ function initCardPreviews() {
       ctx.fillStyle = "#090c18";
       ctx.fillRect(0, 0, w, h);
 
-      const binX = w * 0.68, binY = h * 0.6;
+      const binX = w * 0.72, binY = h * 0.65;
       ctx.fillStyle = "#1e293b";
       ctx.strokeStyle = "#64748b";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.ellipse(binX, binY + 40, 24, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      ctx.ellipse(binX, binY + 25, 16, 5, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
 
       ctx.beginPath();
-      ctx.moveTo(binX - 28, binY);
-      ctx.lineTo(binX - 20, binY + 40);
-      ctx.lineTo(binX + 20, binY + 40);
-      ctx.lineTo(binX + 28, binY);
+      ctx.moveTo(binX - 18, binY);
+      ctx.lineTo(binX - 13, binY + 25);
+      ctx.lineTo(binX + 13, binY + 25);
+      ctx.lineTo(binX + 18, binY);
       ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
       ctx.beginPath();
-      ctx.ellipse(binX, binY, 28, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(binX, binY, 18, 6, 0, 0, Math.PI * 2);
       ctx.fillStyle = "#0f172a";
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
       const progress = (t * 0.8) % 1;
-      const startX = w * 0.22, startY = h * 0.85;
-      const peakX = w * 0.45, peakY = h * 0.25;
+      const startX = w * 0.2, startY = h * 0.82;
+      const peakX = w * 0.45, peakY = h * 0.28;
       const endX = binX, endY = binY - 2;
 
       ctx.strokeStyle = "rgba(244, 63, 94, 0.3)";
-      ctx.setLineDash([4, 4]);
+      ctx.setLineDash([3, 3]);
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.quadraticCurveTo(peakX, peakY, endX, endY);
@@ -888,13 +701,12 @@ function initCardPreviews() {
       const u = progress;
       const bx = (1 - u) * (1 - u) * startX + 2 * (1 - u) * u * peakX + u * u * endX;
       const by = (1 - u) * (1 - u) * startY + 2 * (1 - u) * u * peakY + u * u * endY;
-      const bRad = 12 * (1 - u * 0.5);
+      const bRad = 8 * (1 - u * 0.5);
 
       ctx.fillStyle = "#f8fafc";
-      ctx.shadowColor = "#fb7185";
-      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#fb7185"; ctx.shadowBlur = 6;
       ctx.beginPath();
-      ctx.arc(bx, by, Math.max(3, bRad), 0, Math.PI * 2);
+      ctx.arc(bx, by, Math.max(2.5, bRad), 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
     }
