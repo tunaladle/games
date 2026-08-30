@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Trash Toss 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+  body {
+    background: #090c18;
+    background-image: 
+      radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 80% 90%, rgba(244, 63, 94, 0.08) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    font-family: 'Outfit', -apple-system, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    color: #f8fafc;
+    padding: 8px;
+  }
+  #game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 520px;
+  }
+  .top-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+  }
+  .title-tag {
+    font-size: clamp(18px, 4vw, 22px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #a5b4fc, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+  }
+  .sound-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    height: 34px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .sound-toggle svg { width: 15px; height: 15px; fill: currentColor; }
+  .sound-toggle:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #f8fafc;
+    transform: translateY(-1px);
+  }
+  .sound-toggle.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #818cf8;
+    color: #fff;
+  }
+  #hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: rgba(18, 24, 44, 0.65);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 8px 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .hud-badge { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .hud-badge .lbl { font-size: 10px; font-weight: 600; color: #64748b; letter-spacing: 1.2px; }
+  .hud-badge .val { font-family: 'Space Mono', monospace; font-size: 16px; color: #fff; font-weight: 700; }
+  .hud-badge .val.streak-val { color: #f59e0b; }
+  .wind-indicator {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 4px 12px; border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .wind-arrow { font-size: 16px; color: #38bdf8; font-weight: bold; }
+  .wind-text { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: #38bdf8; }
+  #canvas-container {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.1);
+    touch-action: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #080b14;
+    overflow: hidden;
+  }
+  canvas { display: block; cursor: grab; touch-action: none; }
+  canvas:active { cursor: grabbing; }
+  @media (min-width: 769px) {
+    #canvas-container { height: min(640px, 75vh); aspect-ratio: 460 / 620; }
+    canvas { width: auto; height: 100%; }
+  }
+  @media (max-width: 768px) {
+    body { padding: 6px; }
+    #canvas-container { width: 100%; max-height: 72vh; aspect-ratio: 460 / 620; }
+    canvas { width: 100%; height: 100%; }
+  }
+  #hint { color: #64748b; font-size: 11px; letter-spacing: 0.5px; text-align: center; }
+
+  .hub-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    height: 34px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+  }
+  .hub-btn svg { width: 14px; height: 14px; fill: currentColor; }
+  .hub-btn:hover {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.35);
+    color: #fb7185;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+  }
+</style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <div class="top-header">
+    <a href="index.html" class="hub-btn" title="Back to Arcade Hub">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <span>HUB</span>
+    </a>
+    <div class="title-tag">🗑️ Trash Toss 3D</div>
+    <button id="mute-btn" class="sound-toggle" title="Toggle sound (M)">
+      <svg id="muteIcon" viewBox="0 0 24 24">
+        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+      </svg>
+      <span id="muteTxt">MUTED</span>
+    </button>
+  </div>
+
+  <div id="hud">
+    <div class="hud-badge">
+      <span class="lbl">SCORE</span>
+      <span class="val" id="score-val">0</span>
+    </div>
+    <div class="wind-indicator" id="wind-box">
+      <span class="wind-arrow" id="wind-arrow">➔</span>
+      <span class="wind-text" id="wind-text">0.0 MPH</span>
+    </div>
+    <div class="hud-badge">
+      <span class="lbl">STREAK</span>
+      <span class="val streak-val" id="streak-val">0</span>
+    </div>
+    <div class="hud-badge">
+      <span class="lbl">BEST</span>
+      <span class="val" id="best-val">0</span>
+    </div>
+  </div>
+
+  <div id="canvas-container">
+    <canvas id="c" width="460" height="620"></canvas>
+  </div>
+
+  <div id="hint">Drag & flick paper ball upward to toss &nbsp;|&nbsp; Space: quick toss &nbsp;|&nbsp; M: mute</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const W = 460;
+const H = 620;
+
+let AC = null;
+let muted = true;
+
+function getAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+
+const muteBtn  = document.getElementById('mute-btn');
+const muteTxt  = document.getElementById('muteTxt');
+const muteIcon = document.getElementById('muteIcon');
+
+function updateMuteUI() {
+  muteTxt.textContent = muted ? 'MUTED' : 'SOUND';
+  muteBtn.classList.toggle('active', !muted);
+  muteIcon.innerHTML = muted 
+    ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+    : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+}
+updateMuteUI();
+
+muteBtn.addEventListener('click', () => {
+  muted = !muted;
+  if (!muted) getAC();
+  updateMuteUI();
+});
+
+function playTone(freq, dur, type = 'sine', vol = 0.15, slide = null) {
+  if (muted) return;
+  try {
+    const ac = getAC();
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type;
+    o.frequency.setValueAtTime(freq, ac.currentTime);
+    if (slide) o.frequency.exponentialRampToValueAtTime(slide, ac.currentTime + dur);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + dur);
+    o.start(); o.stop(ac.currentTime + dur);
+  } catch(e) {}
+}
+
+const SFX = {
+  throw: () => playTone(300, 0.1, 'sine', 0.15, 520),
+  swish: () => {
+    playTone(523, 0.1, 'sine', 0.2);
+    setTimeout(() => playTone(659, 0.12, 'sine', 0.25), 60);
+    setTimeout(() => playTone(784, 0.2, 'sine', 0.3), 130);
+  },
+  rimHit: () => playTone(180, 0.08, 'triangle', 0.25, 90),
+  miss: () => playTone(130, 0.22, 'sawtooth', 0.15, 60),
+  streak: () => {
+    [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 0.1, 'triangle', 0.2), i * 50));
+  }
+};
+
+let score = 0;
+let streak = 0;
+let bestStreak = +(localStorage.getItem('tt_best_streak') || 0);
+let bestScore  = +(localStorage.getItem('tt_best_score') || 0);
+
+document.getElementById('best-val').textContent = bestScore;
+
+let wind = 0;
+let windParticles = [];
+
+function changeWind() {
+  const maxW = Math.min(4.0, 1.0 + Math.floor(score / 40) * 0.4);
+  wind = (Math.random() * 2 - 1) * maxW;
+  
+  const windArrow = document.getElementById('wind-arrow');
+  const windText = document.getElementById('wind-text');
+
+  const absW = Math.abs(wind).toFixed(1);
+  windText.textContent = `${absW} MPH`;
+
+  if (Math.abs(wind) < 0.3) {
+    windArrow.textContent = '•';
+  } else if (wind > 0) {
+    windArrow.textContent = '➔';
+  } else {
+    windArrow.textContent = '⬅';
+  }
+}
+
+const bin = {
+  x: W / 2,
+  y: 280,
+  width: 95,
+  height: 110,
+  rimDepth: 22,
+  wobble: 0
+};
+
+let ball = null;
+let drag = null;
+let particles = [];
+let floaties = [];
+
+function resetBall() {
+  ball = {
+    x: W / 2,
+    y: H - 90,
+    z: 0,
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    rotX: 0,
+    rotY: 0,
+    rotZ: 0,
+    radius: 34,
+    state: 'held',
+    inBin: false,
+    bounceCount: 0
+  };
+  changeWind();
+}
+
+function spawnFloatie(x, y, text, color = '#f59e0b') {
+  floaties.push({ x, y, text, color, life: 1, vy: -1.6 });
+}
+
+function spawnSparks(x, y, color = '#38bdf8', count = 14) {
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 2 + Math.random() * 4;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * s,
+      vy: Math.sin(a) * s,
+      life: 1,
+      decay: 0.03 + Math.random() * 0.03,
+      size: 2 + Math.random() * 3,
+      color
+    });
+  }
+}
+
+function handlePointerStart(px, py) {
+  getAC();
+  if (!ball || ball.state !== 'held') return;
+  drag = { startX: px, startY: py, curX: px, curY: py, startTime: Date.now() };
+}
+
+function handlePointerMove(px, py) {
+  if (!drag || !ball || ball.state !== 'held') return;
+  drag.curX = px;
+  drag.curY = py;
+
+  const dx = px - drag.startX;
+  const dy = py - drag.startY;
+
+  if (dy > 0) {
+    ball.x = W / 2 + dx * 0.4;
+    ball.y = (H - 90) + dy * 0.3;
+  } else {
+    ball.x = W / 2 + dx * 0.5;
+    ball.y = (H - 90) + dy * 0.5;
+  }
+}
+
+function handlePointerEnd() {
+  if (!drag || !ball || ball.state !== 'held') return;
+
+  const dx = drag.curX - drag.startX;
+  const dy = drag.curY - drag.startY;
+  const totalDist = Math.hypot(dx, dy);
+
+  let throwVx = 0;
+  let throwVy = 0;
+  let throwVz = 3.5;
+
+  if (dy < -20) {
+    const power = Math.min(Math.abs(dy), 260);
+    throwVx = (dx / Math.max(20, Math.abs(dy))) * 4.5;
+    throwVy = -Math.max(6, (power / 260) * 14.5);
+    throwVz = 2.8 + (power / 260) * 1.6;
+    executeThrow(throwVx, throwVy, throwVz);
+  }
+  else if (dy > 25) {
+    const power = Math.min(dy, 220);
+    throwVx = -(dx / dy) * 4.0;
+    throwVy = -Math.max(7, (power / 220) * 14.0);
+    throwVz = 2.8 + (power / 220) * 1.5;
+    executeThrow(throwVx, throwVy, throwVz);
+  }
+  else if (totalDist < 15) {
+    executeThrow((Math.random() - 0.5) * 1.2, -11.5, 3.4);
+  } else {
+    ball.x = W / 2;
+    ball.y = H - 90;
+  }
+
+  drag = null;
+}
+
+function executeThrow(vx, vy, vz) {
+  ball.state = 'flying';
+  ball.vx = vx;
+  ball.vy = vy;
+  ball.vz = vz;
+  SFX.throw();
+}
+
+canvas.addEventListener('mousedown', e => {
+  const r = canvas.getBoundingClientRect();
+  const scale = canvas.width / r.width;
+  handlePointerStart((e.clientX - r.left) * scale, (e.clientY - r.top) * scale);
+});
+
+window.addEventListener('mousemove', e => {
+  if (!drag) return;
+  const r = canvas.getBoundingClientRect();
+  const scale = canvas.width / r.width;
+  handlePointerMove((e.clientX - r.left) * scale, (e.clientY - r.top) * scale);
+});
+
+window.addEventListener('mouseup', handlePointerEnd);
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  const scale = canvas.width / r.width;
+  const t = e.touches[0];
+  handlePointerStart((t.clientX - r.left) * scale, (t.clientY - r.top) * scale);
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drag) return;
+  const r = canvas.getBoundingClientRect();
+  const scale = canvas.width / r.width;
+  const t = e.touches[0];
+  handlePointerMove((t.clientX - r.left) * scale, (t.clientY - r.top) * scale);
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  handlePointerEnd();
+}, { passive: false });
+
+window.addEventListener('keydown', e => {
+  if (e.code === 'KeyM') {
+    muted = !muted;
+    if (!muted) getAC();
+    updateMuteUI();
+  }
+  if (e.code === 'Space' || e.code === 'Enter') {
+    e.preventDefault();
+    if (ball && ball.state === 'held') {
+      executeThrow(0, -11.8, 3.4);
+    }
+  }
+});
+
+function update() {
+  if (Math.random() < 0.3 && Math.abs(wind) > 0.3) {
+    windParticles.push({
+      x: wind > 0 ? -20 : W + 20,
+      y: 160 + Math.random() * 220,
+      vx: wind * 2.5,
+      vy: (Math.random() - 0.5) * 0.3,
+      life: 1,
+      len: 15 + Math.random() * 20
+    });
+  }
+
+  windParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.02;
+  });
+  windParticles = windParticles.filter(p => p.life > 0);
+
+  if (score >= 80) {
+    bin.x = (W / 2) + Math.sin(Date.now() / 1100) * (W * 0.22);
+  }
+
+  if (ball && ball.state === 'flying') {
+    const windDrift = (ball.z / 100) * wind * 0.1;
+    ball.vx += windDrift;
+    ball.vy += 0.38;
+
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    ball.z += ball.vz;
+
+    ball.rotZ += ball.vx * 0.06;
+    ball.rotX += ball.vz * 0.06;
+
+    if (streak >= 3) {
+      particles.push({
+        x: ball.x,
+        y: ball.y,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5,
+        life: 1,
+        decay: 0.05,
+        size: 4 + Math.random() * 4,
+        color: Math.random() < 0.6 ? '#f59e0b' : '#ef4444'
+      });
+    }
+
+    if (ball.z >= 85 && ball.z <= 105 && !ball.inBin) {
+      const binTopY = bin.y - bin.height / 2;
+      const rimLeft = bin.x - bin.width / 2 + 6;
+      const rimRight = bin.x + bin.width / 2 - 6;
+
+      if (ball.x >= rimLeft && ball.x <= rimRight) {
+        const dy = ball.y - binTopY;
+
+        if (dy >= -20 && dy <= 35 && ball.vy > 0) {
+          ball.inBin = true;
+          ball.state = 'scored';
+          ball.vx *= 0.1;
+          ball.vy = 2.5;
+          handleScore();
+        }
+        else if (Math.abs(dy) < 30 && ball.bounceCount === 0) {
+          ball.bounceCount++;
+          ball.vy = -ball.vy * 0.55;
+          ball.vx += (ball.x < bin.x ? -2.2 : 2.2);
+          ball.vz *= 0.3;
+          SFX.rimHit();
+          bin.wobble = 1.8;
+        }
+      }
+    }
+
+    if (ball.z > 120 || ball.y > H + 50 || ball.x < -60 || ball.x > W + 60) {
+      if (ball.state !== 'scored') {
+        handleMiss();
+      }
+    }
+  }
+
+  if (bin.wobble > 0) bin.wobble *= 0.92;
+
+  floaties.forEach(f => {
+    f.y += f.vy;
+    f.life -= 0.02;
+  });
+  floaties = floaties.filter(f => f.life > 0);
+
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+  });
+  particles = particles.filter(p => p.life > 0);
+}
+
+function handleScore() {
+  streak++;
+  if (streak > bestStreak) {
+    bestStreak = streak;
+    localStorage.setItem('tt_best_streak', bestStreak);
+  }
+
+  const mult = streak >= 5 ? 3 : (streak >= 3 ? 2 : 1);
+  const pts = 10 * mult;
+  score += pts;
+
+  if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem('tt_best_score', bestScore);
+    document.getElementById('best-val').textContent = bestScore;
+  }
+
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('streak-val').textContent = streak;
+
+  spawnSparks(bin.x, bin.y - bin.height / 2, '#38bdf8', 22);
+  spawnFloatie(bin.x, bin.y - 60, streak >= 3 ? `🔥 x${streak} SWISH! +${pts}` : `+${pts}`, '#f59e0b');
+  
+  if (streak >= 3) SFX.streak();
+  else SFX.swish();
+
+  bin.wobble = 2.2;
+  setTimeout(resetBall, 650);
+}
+
+function handleMiss() {
+  ball.state = 'missed';
+  streak = 0;
+  document.getElementById('streak-val').textContent = streak;
+  spawnFloatie(W / 2, H / 2, 'MISSED!', '#ef4444');
+  SFX.miss();
+  setTimeout(resetBall, 700);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, H * 0.65);
+  wallGrad.addColorStop(0, '#0e1428');
+  wallGrad.addColorStop(1, '#161c36');
+  ctx.fillStyle = wallGrad;
+  ctx.fillRect(0, 0, W, H * 0.65);
+
+  const floorGrad = ctx.createLinearGradient(0, H * 0.65, 0, H);
+  floorGrad.addColorStop(0, '#1c1626');
+  floorGrad.addColorStop(1, '#0e0b16');
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(0, H * 0.65, W, H * 0.35);
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+  ctx.fillRect(0, H * 0.65 - 3, W, 6);
+
+  windParticles.forEach(p => {
+    ctx.save();
+    ctx.strokeStyle = `rgba(56, 189, 248, ${p.life * 0.35})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + p.vx * 3, p.y + p.vy * 3);
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  drawBin(bin.x, bin.y);
+
+  particles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  if (ball) drawPaperBall(ball);
+
+  floaties.forEach(f => {
+    ctx.save();
+    ctx.globalAlpha = f.life;
+    ctx.fillStyle = f.color;
+    ctx.font = '700 18px "Outfit", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(f.text, f.x, f.y);
+    ctx.restore();
+  });
+
+  if (drag && ball && ball.state === 'held') {
+    const dy = drag.curY - drag.startY;
+    const dx = drag.curX - drag.startX;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(ball.x, ball.y);
+
+    if (dy < -10) {
+      ctx.lineTo(ball.x + dx * 0.8, ball.y + dy * 0.8);
+    } else if (dy > 15) {
+      ctx.lineTo(ball.x - dx * 0.8, ball.y - dy * 0.8);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function drawBin(bx, by) {
+  const bw = bin.width;
+  const bh = bin.height;
+  const rd = bin.rimDepth;
+  const wob = Math.sin(Date.now() / 80) * bin.wobble * 2;
+
+  ctx.save();
+  ctx.translate(bx + wob, by);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+  ctx.beginPath();
+  ctx.ellipse(0, bh / 2 + 10, bw * 0.55, 12, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  const bodyGrad = ctx.createLinearGradient(-bw / 2, 0, bw / 2, 0);
+  bodyGrad.addColorStop(0, '#1e293b');
+  bodyGrad.addColorStop(0.3, '#334155');
+  bodyGrad.addColorStop(0.7, '#1e293b');
+  bodyGrad.addColorStop(1, '#0f172a');
+
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.moveTo(-bw / 2, -bh / 2);
+  ctx.lineTo(bw / 2, -bh / 2);
+  ctx.lineTo(bw * 0.4, bh / 2);
+  ctx.lineTo(-bw * 0.4, bh / 2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1;
+  for (let i = -3; i <= 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * 12, -bh / 2);
+    ctx.lineTo(i * 9, bh / 2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#090d16';
+  ctx.beginPath();
+  ctx.ellipse(0, -bh / 2, bw / 2, rd, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.ellipse(0, -bh / 2, bw / 2, rd, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(0, -bh / 2 - 1, bw / 2 - 2, rd - 1, 0, Math.PI * 0.8, Math.PI * 1.8);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawPaperBall(b) {
+  const scale = Math.max(0.38, 1 - (b.z / 100) * 0.6);
+  const r = b.radius * scale;
+
+  ctx.save();
+  ctx.translate(b.x, b.y);
+
+  if (b.state === 'flying' || b.state === 'held') {
+    const shadowY = Math.min(H - 40, b.y + (H - 90 - b.y) * 0.8 + 30);
+    const shadowScale = scale * (1 - (shadowY - b.y) / 400);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, shadowY - b.y, r * 1.1 * shadowScale, r * 0.45 * shadowScale, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (streak >= 3) {
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 18;
+  }
+
+  const pGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
+  pGrad.addColorStop(0, '#ffffff');
+  pGrad.addColorStop(0.6, '#e2e8f0');
+  pGrad.addColorStop(1, '#94a3b8');
+
+  ctx.fillStyle = pGrad;
+  ctx.beginPath();
+  const verts = 10;
+  for (let i = 0; i < verts; i++) {
+    const ang = (i / verts) * Math.PI * 2 + b.rotZ;
+    const cr = r * (0.92 + 0.12 * Math.sin(i * 3.7 + b.rotX));
+    const px = Math.cos(ang) * cr;
+    const py = Math.sin(ang) * cr;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.4, -r * 0.2);
+  ctx.lineTo(0, r * 0.3);
+  ctx.lineTo(r * 0.5, -r * 0.1);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+resetBall();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

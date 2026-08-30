@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Galaxy Defender - Neon Space Invaders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: #060814;
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 80% 90%, rgba(244, 63, 94, 0.08) 0%, transparent 40%);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Outfit", -apple-system, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+      padding: 8px;
+      color: #f8fafc;
+    }
+
+    #game-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* ── Top Header ── */
+    .top-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .title-tag {
+      font-size: clamp(16px, 3.8vw, 22px);
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .hub-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      height: 34px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+      font-family: "Outfit", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-decoration: none;
+    }
+    .hub-btn svg { width: 14px; height: 14px; fill: currentColor; }
+    .hub-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    }
+
+    .sound-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      height: 34px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+      font-family: "Outfit", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .sound-toggle svg { width: 15px; height: 15px; fill: currentColor; }
+    .sound-toggle:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      transform: translateY(-1px);
+    }
+    .sound-toggle.active {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    /* ── HUD ── */
+    #hud {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      background: rgba(16, 22, 42, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 8px 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    #hud span {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      letter-spacing: 1.2px;
+    }
+    #hud b {
+      font-family: "Space Mono", monospace;
+      font-size: 16px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* ── Canvas Container ── */
+    #canvas-container {
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.1);
+      background: #070913;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      display: block;
+      background: #070913;
+    }
+
+    @media (min-width: 769px) {
+      #canvas-container { height: min(620px, 73vh); aspect-ratio: 480 / 600; }
+      canvas { width: auto; height: 100%; }
+      #mobile-controls { display: none !important; }
+    }
+    @media (max-width: 768px) {
+      body { padding: 6px; }
+      #canvas-container { width: 100%; max-height: 65vh; aspect-ratio: 480 / 600; }
+      canvas { width: 100%; height: 100%; }
+    }
+
+    /* Mobile Touch Bar */
+    #mobile-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0 8px;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .tbtn {
+      flex: 1;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      font-family: "Outfit", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.1s ease;
+      touch-action: none;
+    }
+    .tbtn:active { background: rgba(56, 189, 248, 0.3); border-color: #38bdf8; transform: scale(0.96); }
+    .tbtn-fire { background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af; flex: 1.4; }
+    .tbtn-fire:active { background: rgba(244, 63, 94, 0.4); }
+
+    #hint {
+      color: #64748b;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <!-- Top Header -->
+  <div class="top-header">
+    <a href="index.html" class="hub-btn" title="Back to Arcade Hub">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <span>HUB</span>
+    </a>
+    <div class="title-tag">🚀 GALAXY DEFENDER</div>
+    <button id="mute-btn" class="sound-toggle" title="Toggle sound (M)">
+      <svg id="muteIcon" viewBox="0 0 24 24">
+        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+      </svg>
+      <span id="muteTxt">MUTED</span>
+    </button>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <span>SCORE <b id="hud-score">0</b></span>
+    <span>LIVES <b id="hud-lives">3</b></span>
+    <span>WAVE <b id="hud-wave">1</b></span>
+    <span>BEST <b id="hud-best">0</b></span>
+  </div>
+
+  <!-- Canvas Container -->
+  <div id="canvas-container">
+    <canvas id="c" width="480" height="600"></canvas>
+  </div>
+
+  <!-- Mobile Controls -->
+  <div id="mobile-controls">
+    <button class="tbtn" id="m-left">◀</button>
+    <button class="tbtn tbtn-fire" id="m-fire">FIRE ⚡</button>
+    <button class="tbtn" id="m-right">▶</button>
+  </div>
+
+  <div id="hint">◀ ▶ Move &nbsp;|&nbsp; Space to Fire &nbsp;|&nbsp; P to Pause &nbsp;|&nbsp; M to Mute</div>
+</div>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const W = 480;
+const H = 600;
+canvas.width = W; canvas.height = H;
+
+// ── Audio Engine ──
+let AC = null;
+function getAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+
+const muteBtn  = document.getElementById("mute-btn");
+const muteTxt  = document.getElementById("muteTxt");
+const muteIcon = document.getElementById("muteIcon");
+let muted = true;
+
+function updateMuteUI() {
+  muteTxt.textContent = muted ? "MUTED" : "SOUND";
+  muteBtn.classList.toggle("active", !muted);
+  muteIcon.innerHTML = muted 
+    ? "<path d=\"M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z\"/>"
+    : "<path d=\"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z\"/>";
+}
+updateMuteUI();
+
+function toggleMute() {
+  muted = !muted;
+  if (!muted) getAC();
+  updateMuteUI();
+}
+muteBtn.addEventListener("click", toggleMute);
+
+function resumeAC() {
+  if (!muted) getAC();
+}
+window.addEventListener("click", resumeAC, { once: true });
+window.addEventListener("keydown", resumeAC, { once: true });
+
+function playTone(freq, dur, type = "square", vol = 0.2, slide = null) {
+  if (muted || state === "paused") return;
+  try {
+    const ac = getAC();
+    const now = ac.currentTime;
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain);
+    gain.connect(ac.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(Math.max(10, freq), now);
+    if (slide) osc.frequency.linearRampToValueAtTime(Math.max(10, slide), now + dur);
+    gain.gain.setValueAtTime(Math.max(0.001, vol), now);
+    gain.gain.linearRampToValueAtTime(0.001, now + dur);
+    osc.onended = () => { try { osc.disconnect(); gain.disconnect(); } catch(e) {} };
+    osc.start(now);
+    osc.stop(now + dur);
+  } catch(e) {}
+}
+
+const marchNotes = [174.6, 164.8, 155.6, 146.8];
+let marchStep = 0;
+function sndMarch() {
+  playTone(marchNotes[marchStep % 4], 0.08, "sawtooth", 0.14);
+  marchStep++;
+}
+function sndShoot() { playTone(880, 0.1, "square", 0.18, 220); }
+function sndInvaderKill() { playTone(180, 0.15, "triangle", 0.22, 60); }
+function sndPlayerHit() { [280, 220, 150, 80].forEach((f, i) => setTimeout(() => playTone(f, 0.18, "sawtooth", 0.22), i * 80)); }
+function sndUfo() { playTone(540, 0.12, "sine", 0.12, 680); }
+function sndPowerup() { [440, 587, 880].forEach((f, i) => setTimeout(() => playTone(f, 0.12, "sine", 0.18), i * 70)); }
+
+// ── Game State ──
+let state = "idle"; // "idle", "playing", "paused", "over", "wave_clear"
+let score = 0;
+let bestScore = parseInt(localStorage.getItem("gd_neon_best") || "0", 10);
+let lives = 3;
+let wave = 1;
+
+// ── Background Stars ──
+const stars = Array.from({ length: 45 }, () => ({
+  x: Math.random() * W,
+  y: Math.random() * H,
+  size: 0.8 + Math.random() * 1.6,
+  speed: 0.2 + Math.random() * 0.6,
+  alpha: 0.2 + Math.random() * 0.7
+}));
+
+// ── Player Cannon ──
+const player = {
+  x: W / 2,
+  y: H - 36,
+  w: 32,
+  h: 18,
+  speed: 280,
+  movingLeft: false,
+  movingRight: false,
+  shootCD: 0,
+  powerup: null, // "tri", "rapid"
+  powerupTimer: 0,
+  invTimer: 0
+};
+
+// ── Entities ──
+let bullets = [];
+let alienBombs = [];
+let invaders = [];
+let shields = [];
+let particles = [];
+let scorePops = [];
+let ufo = null;
+let ufoSpawnCD = 15;
+
+// Swarm Movement
+let swarmDir = 1; // 1 = right, -1 = left
+let swarmStepTimer = 0;
+let swarmStepInterval = 0.75;
+let swarmDropPending = false;
+
+// ── Alien Swarm Setup ──
+function initInvaders() {
+  invaders = [];
+  const rows = 5;
+  const cols = 10;
+  const startX = 35;
+  const startY = 65 + Math.min(wave * 8, 40);
+  const gapX = 38;
+  const gapY = 28;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      let type = "octopus"; // row 0
+      let pts = 30;
+      let color = "#f43f5e";
+      if (r === 1 || r === 2) { type = "crab"; pts = 20; color = "#38bdf8"; }
+      if (r === 3 || r === 4) { type = "squid"; pts = 10; color = "#4ade80"; }
+
+      invaders.push({
+        x: startX + c * gapX,
+        y: startY + r * gapY,
+        w: 22,
+        h: 16,
+        type,
+        pts,
+        color,
+        frame: 0
+      });
+    }
+  }
+  swarmDir = 1;
+  swarmStepInterval = Math.max(0.12, 0.75 - (wave - 1) * 0.08);
+  swarmStepTimer = 0;
+}
+
+// ── Defense Bunkers (Shields) ──
+function initShields() {
+  shields = [];
+  const count = 4;
+  const sw = 44, sh = 28;
+  const startX = 40;
+  const spacing = (W - startX * 2 - sw * count) / (count - 1);
+
+  for (let i = 0; i < count; i++) {
+    const bx = startX + i * (sw + spacing);
+    const by = H - 105;
+    // Build small sub-blocks for realistic erosion
+    const cols = 6, rows = 4;
+    const bw = sw / cols, bh = sh / rows;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        // Cut out bottom center archway
+        if (r >= 2 && (c === 2 || c === 3)) continue;
+        // Cut out top corners
+        if (r === 0 && (c === 0 || c === cols - 1)) continue;
+        shields.push({
+          x: bx + c * bw,
+          y: by + r * bh,
+          w: bw,
+          h: bh,
+          hp: 3
+        });
+      }
+    }
+  }
+}
+
+// ── Particle Explosion ──
+function explode(x, y, color, n = 12) {
+  for (let i = 0; i < n; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const spd = 40 + Math.random() * 120;
+    particles.push({
+      x, y,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      life: 1,
+      decay: 1.5 + Math.random() * 1.5,
+      size: 1.5 + Math.random() * 2.5,
+      color
+    });
+  }
+}
+
+function spawnScorePop(x, y, text, color = "#fbbf24") {
+  scorePops.push({ x, y, text, life: 1, vy: -25, color });
+}
+
+// ── Update ──
+function update(dt) {
+  // Update Background Stars
+  stars.forEach(s => {
+    s.y += s.speed;
+    if (s.y > H) s.y = 0;
+  });
+
+  if (state !== "playing") return;
+
+  // Player Timers & Powerups
+  if (player.shootCD > 0) player.shootCD -= dt;
+  if (player.invTimer > 0) player.invTimer -= dt;
+  if (player.powerupTimer > 0) {
+    player.powerupTimer -= dt;
+    if (player.powerupTimer <= 0) player.powerup = null;
+  }
+
+  // Player Movement
+  if (player.movingLeft) player.x -= player.speed * dt;
+  if (player.movingRight) player.x += player.speed * dt;
+  player.x = Math.max(player.w / 2 + 10, Math.min(W - player.w / 2 - 10, player.x));
+
+  // Update Player Lasers
+  bullets = bullets.filter(b => {
+    b.y -= b.vy * dt;
+    return b.y > -10;
+  });
+
+  // Update Alien Bombs
+  alienBombs = alienBombs.filter(b => {
+    b.y += b.vy * dt;
+    return b.y < H + 10;
+  });
+
+  // Update Particles
+  particles.forEach(p => {
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life -= p.decay * dt;
+  });
+  particles = particles.filter(p => p.life > 0);
+
+  // Update Score Pops
+  scorePops.forEach(sp => {
+    sp.y += sp.vy * dt;
+    sp.life -= 1.2 * dt;
+  });
+  scorePops = scorePops.filter(sp => sp.life > 0);
+
+  // Mystery UFO Cruise
+  if (ufo) {
+    ufo.x += ufo.vx * dt;
+    if ((ufo.vx > 0 && ufo.x > W + 40) || (ufo.vx < 0 && ufo.x < -40)) {
+      ufo = null;
+    }
+  } else {
+    ufoSpawnCD -= dt;
+    if (ufoSpawnCD <= 0) {
+      const left = Math.random() < 0.5;
+      ufo = {
+        x: left ? -30 : W + 30,
+        y: 36,
+        vx: (left ? 1 : -1) * 95,
+        w: 32,
+        h: 14,
+        pts: [100, 150, 200, 300][Math.floor(Math.random() * 4)]
+      };
+      sndUfo();
+      ufoSpawnCD = 20 + Math.random() * 15;
+    }
+  }
+
+  // Invaders March Logic
+  const totalInvaders = invaders.length;
+  if (totalInvaders === 0) {
+    state = "wave_clear";
+    setTimeout(() => {
+      wave++;
+      initInvaders();
+      initShields();
+      player.x = W / 2;
+      bullets = [];
+      alienBombs = [];
+      updateHUD();
+      state = "playing";
+    }, 1400);
+    return;
+  }
+
+  // Dynamic step rate based on remaining swarm
+  const speedRatio = totalInvaders / 55;
+  const currentInterval = Math.max(0.06, swarmStepInterval * speedRatio);
+
+  swarmStepTimer += dt;
+  if (swarmStepTimer >= currentInterval) {
+    swarmStepTimer = 0;
+    sndMarch();
+
+    // Check if swarm reached horizontal boundaries
+    let hitEdge = false;
+    invaders.forEach(inv => {
+      inv.frame = inv.frame === 0 ? 1 : 0;
+      if ((swarmDir === 1 && inv.x + inv.w / 2 >= W - 15) ||
+          (swarmDir === -1 && inv.x - inv.w / 2 <= 15)) {
+        hitEdge = true;
+      }
+    });
+
+    if (hitEdge) {
+      swarmDir *= -1;
+      invaders.forEach(inv => {
+        inv.y += 14;
+        // Game over if invaders land on shield / player row
+        if (inv.y + inv.h / 2 >= player.y - 10) {
+          killPlayer(true);
+        }
+      });
+    } else {
+      invaders.forEach(inv => {
+        inv.x += swarmDir * 8;
+      });
+    }
+
+    // Alien Shooting
+    if (Math.random() < 0.45 + wave * 0.05 && alienBombs.length < 4 + wave) {
+      const shootingInv = invaders[Math.floor(Math.random() * invaders.length)];
+      alienBombs.push({
+        x: shootingInv.x,
+        y: shootingInv.y + 10,
+        vy: 180 + wave * 15,
+        w: 3,
+        h: 9
+      });
+    }
+  }
+
+  // ── Collisions: Player Bullets vs Invaders ──
+  bullets = bullets.filter(b => {
+    for (let i = invaders.length - 1; i >= 0; i--) {
+      const inv = invaders[i];
+      if (Math.abs(b.x - inv.x) < inv.w / 2 + 3 && Math.abs(b.y - inv.y) < inv.h / 2 + 4) {
+        score += inv.pts;
+        spawnScorePop(inv.x, inv.y, `+${inv.pts}`, inv.color);
+        explode(inv.x, inv.y, inv.color, 14);
+        sndInvaderKill();
+        invaders.splice(i, 1);
+        if (score > bestScore) {
+          bestScore = score;
+          localStorage.setItem("gd_neon_best", bestScore);
+        }
+        updateHUD();
+        return false;
+      }
+    }
+    return true;
+  });
+
+  // ── Collisions: Player Bullets vs UFO ──
+  if (ufo) {
+    bullets = bullets.filter(b => {
+      if (ufo && Math.abs(b.x - ufo.x) < ufo.w / 2 + 4 && Math.abs(b.y - ufo.y) < ufo.h / 2 + 4) {
+        score += ufo.pts;
+        spawnScorePop(ufo.x, ufo.y, `+${ufo.pts}`, "#fbbf24");
+        explode(ufo.x, ufo.y, "#fbbf24", 20);
+        sndPowerup();
+        // Give powerup chance
+        player.powerup = Math.random() < 0.5 ? "tri" : "rapid";
+        player.powerupTimer = 10;
+        ufo = null;
+        if (score > bestScore) {
+          bestScore = score;
+          localStorage.setItem("gd_neon_best", bestScore);
+        }
+        updateHUD();
+        return false;
+      }
+      return true;
+    });
+  }
+
+  // ── Collisions: Bullets & Bombs vs Shields ──
+  shields = shields.filter(sh => {
+    // Player bullets hit shields
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i];
+      if (b.x >= sh.x && b.x <= sh.x + sh.w && b.y >= sh.y && b.y <= sh.y + sh.h) {
+        bullets.splice(i, 1);
+        sh.hp--;
+        explode(b.x, b.y, "#38bdf8", 4);
+        return sh.hp > 0;
+      }
+    }
+    // Alien bombs hit shields
+    for (let i = alienBombs.length - 1; i >= 0; i--) {
+      const b = alienBombs[i];
+      if (b.x >= sh.x && b.x <= sh.x + sh.w && b.y >= sh.y && b.y <= sh.y + sh.h) {
+        alienBombs.splice(i, 1);
+        sh.hp--;
+        explode(b.x, b.y, "#f43f5e", 4);
+        return sh.hp > 0;
+      }
+    }
+    return true;
+  });
+
+  // ── Collisions: Alien Bombs vs Player ──
+  if (player.invTimer <= 0) {
+    for (let i = alienBombs.length - 1; i >= 0; i--) {
+      const b = alienBombs[i];
+      if (Math.abs(b.x - player.x) < player.w / 2 && Math.abs(b.y - player.y) < player.h / 2) {
+        alienBombs.splice(i, 1);
+        killPlayer();
+        break;
+      }
+    }
+  }
+}
+
+function killPlayer(instantOver = false) {
+  lives--;
+  sndPlayerHit();
+  explode(player.x, player.y, "#38bdf8", 25);
+  updateHUD();
+
+  if (lives <= 0 || instantOver) {
+    state = "over";
+  } else {
+    player.invTimer = 2.5;
+    player.x = W / 2;
+    alienBombs = [];
+  }
+}
+
+function shootBullet() {
+  if (state !== "playing" || player.shootCD > 0) return;
+  const isRapid = player.powerup === "rapid";
+  const isTri = player.powerup === "tri";
+
+  sndShoot();
+  if (isTri) {
+    bullets.push({ x: player.x, y: player.y - 12, vy: 480 });
+    bullets.push({ x: player.x - 10, y: player.y - 8, vy: 460 });
+    bullets.push({ x: player.x + 10, y: player.y - 8, vy: 460 });
+    player.shootCD = 0.22;
+  } else {
+    bullets.push({ x: player.x, y: player.y - 12, vy: 520 });
+    player.shootCD = isRapid ? 0.12 : 0.28;
+  }
+}
+
+// ── Draw ──
+function draw() {
+  ctx.fillStyle = "#070913";
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle Scanline & Grid
+  ctx.strokeStyle = "rgba(56, 189, 248, 0.03)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Draw Stars
+  stars.forEach(s => {
+    ctx.fillStyle = `rgba(226, 232, 240, ${s.alpha})`;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Draw Shields
+  shields.forEach(sh => {
+    ctx.fillStyle = sh.hp === 3 ? "#38bdf8" : sh.hp === 2 ? "rgba(56, 189, 248, 0.6)" : "rgba(56, 189, 248, 0.25)";
+    ctx.fillRect(sh.x, sh.y, sh.w - 0.5, sh.h - 0.5);
+  });
+
+  // Draw Invaders
+  invaders.forEach(inv => {
+    drawInvader(inv);
+  });
+
+  // Draw Mystery UFO
+  if (ufo) {
+    ctx.save();
+    ctx.translate(ufo.x, ufo.y);
+    ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
+    ctx.strokeStyle = "#fbbf24";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, -2, 7, Math.PI, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Draw Player Lasers
+  bullets.forEach(b => {
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    ctx.shadowColor = "#38bdf8";
+    ctx.shadowBlur = 8;
+    ctx.fillRect(b.x - 1.5, b.y - 6, 3, 12);
+    ctx.restore();
+  });
+
+  // Draw Alien Bombs
+  alienBombs.forEach(b => {
+    ctx.save();
+    ctx.fillStyle = "#f43f5e";
+    ctx.shadowColor = "#f43f5e";
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // Draw Particles
+  particles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // Draw Floating Score Pops
+  scorePops.forEach(sp => {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, sp.life));
+    ctx.fillStyle = sp.color;
+    ctx.font = "700 13px Outfit, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(sp.text, sp.x, sp.y);
+    ctx.restore();
+  });
+
+  // Draw Player Cannon
+  if (state !== "over") {
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    if (player.invTimer > 0 && Math.floor(Date.now() / 80) % 2 === 0) {
+      ctx.globalAlpha = 0.4;
+    }
+    // Cannon Base & Barrel
+    const baseGrad = ctx.createLinearGradient(-16, 0, 16, 0);
+    baseGrad.addColorStop(0, "#0284c7");
+    baseGrad.addColorStop(0.5, "#38bdf8");
+    baseGrad.addColorStop(1, "#0284c7");
+    ctx.fillStyle = baseGrad;
+    ctx.beginPath();
+    ctx.roundRect(-16, 0, 32, 10, 3);
+    ctx.fill();
+
+    // Upper Turret
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(-4, -8, 8, 8);
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillRect(-1.5, -12, 3, 5);
+
+    // Power-up indicator
+    if (player.powerup) {
+      ctx.fillStyle = player.powerup === "tri" ? "#fbbf24" : "#f43f5e";
+      ctx.font = "600 10px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`${player.powerup.toUpperCase()} ${Math.ceil(player.powerupTimer)}s`, 0, 22);
+    }
+    ctx.restore();
+  }
+
+  // ── Overlays ──
+  if (state === "idle") {
+    ctx.fillStyle = "rgba(7, 9, 19, 0.78)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "800 28px Outfit, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("GALAXY DEFENDER", W / 2, H / 2 - 40);
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "500 14px Outfit, sans-serif";
+    ctx.fillText("Defend Earth from the Alien Swarm!", W / 2, H / 2 - 10);
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "700 15px Outfit, sans-serif";
+    ctx.fillText("Tap or Press Space to Launch", W / 2, H / 2 + 35);
+  } else if (state === "paused") {
+    ctx.fillStyle = "rgba(7, 9, 19, 0.82)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "800 36px Outfit, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("PAUSED", W / 2, H / 2 - 20);
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "600 14px Outfit, sans-serif";
+    ctx.fillText("Press P, Space, or Tap to resume", W / 2, H / 2 + 24);
+  } else if (state === "wave_clear") {
+    ctx.fillStyle = "rgba(7, 9, 19, 0.65)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#4ade80";
+    ctx.font = "800 32px Outfit, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`WAVE ${wave} CLEARED!`, W / 2, H / 2);
+  } else if (state === "over") {
+    ctx.fillStyle = "rgba(7, 9, 19, 0.82)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f43f5e";
+    ctx.font = "800 36px Outfit, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", W / 2, H / 2 - 40);
+    ctx.fillStyle = "#fff";
+    ctx.font = "700 18px Space Mono, monospace";
+    ctx.fillText(`Score: ${score}`, W / 2, H / 2);
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "600 14px Outfit, sans-serif";
+    ctx.fillText("Tap or press Space to restart", W / 2, H / 2 + 45);
+  }
+}
+
+// ── Vector Alien Sprites ──
+function drawInvader(inv) {
+  ctx.save();
+  ctx.translate(inv.x, inv.y);
+  ctx.strokeStyle = inv.color;
+  ctx.fillStyle = inv.color;
+  ctx.lineWidth = 1.5;
+
+  const f = inv.frame;
+  if (inv.type === "octopus") {
+    // Squid / Octopus (Top Row)
+    ctx.beginPath();
+    ctx.arc(0, -2, 6, Math.PI, 0);
+    ctx.lineTo(6, 4);
+    ctx.lineTo(f === 0 ? 8 : 4, 7);
+    ctx.lineTo(0, 3);
+    ctx.lineTo(f === 0 ? -8 : -4, 7);
+    ctx.lineTo(-6, 4);
+    ctx.closePath();
+    ctx.stroke();
+    // Eyes
+    ctx.fillRect(-3, -2, 2, 2);
+    ctx.fillRect(1, -2, 2, 2);
+  } else if (inv.type === "crab") {
+    // Crab (Middle Rows)
+    ctx.beginPath();
+    ctx.roundRect(-8, -4, 16, 8, 2);
+    ctx.stroke();
+    // Claws & legs
+    if (f === 0) {
+      ctx.strokeRect(-10, -7, 3, 4);
+      ctx.strokeRect(7, -7, 3, 4);
+      ctx.beginPath(); ctx.moveTo(-6, 4); ctx.lineTo(-9, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(6, 4); ctx.lineTo(9, 7); ctx.stroke();
+    } else {
+      ctx.strokeRect(-10, 0, 3, 4);
+      ctx.strokeRect(7, 0, 3, 4);
+      ctx.beginPath(); ctx.moveTo(-6, 4); ctx.lineTo(-6, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(6, 4); ctx.lineTo(6, 7); ctx.stroke();
+    }
+    // Eyes
+    ctx.fillRect(-4, -2, 2, 2);
+    ctx.fillRect(2, -2, 2, 2);
+  } else {
+    // Jelly / Beetle (Bottom Rows)
+    ctx.beginPath();
+    ctx.ellipse(0, -1, 8, 5, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    if (f === 0) {
+      ctx.beginPath(); ctx.moveTo(-5, 4); ctx.lineTo(-8, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(5, 4); ctx.lineTo(8, 7); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.moveTo(-5, 4); ctx.lineTo(-3, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(5, 4); ctx.lineTo(3, 7); ctx.stroke();
+    }
+    ctx.fillRect(-3, -2, 2, 2);
+    ctx.fillRect(1, -2, 2, 2);
+  }
+  ctx.restore();
+}
+
+function updateHUD() {
+  document.getElementById("hud-score").textContent = score;
+  document.getElementById("hud-lives").textContent = lives;
+  document.getElementById("hud-wave").textContent = wave;
+  document.getElementById("hud-best").textContent = bestScore;
+}
+
+// ── Controls & Input ──
+function handleStartOrAction() {
+  resumeAC();
+  if (state === "over") {
+    score = 0;
+    lives = 3;
+    wave = 1;
+    updateHUD();
+    initInvaders();
+    initShields();
+    player.x = W / 2;
+    bullets = [];
+    alienBombs = [];
+    state = "playing";
+    return;
+  }
+  if (state === "paused") {
+    state = "playing";
+    return;
+  }
+  if (state === "idle") {
+    state = "playing";
+    return;
+  }
+  if (state === "playing") {
+    shootBullet();
+  }
+}
+
+// Keyboard
+window.addEventListener("keydown", e => {
+  if (e.key === "p" || e.key === "P") {
+    if (state === "playing") state = "paused";
+    else if (state === "paused") state = "playing";
+    return;
+  }
+  if (e.key === "m" || e.key === "M") { toggleMute(); return; }
+  if (e.key === " " || e.key === "ArrowUp") {
+    handleStartOrAction();
+    e.preventDefault();
+  }
+  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") player.movingLeft = true;
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") player.movingRight = true;
+});
+
+window.addEventListener("keyup", e => {
+  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") player.movingLeft = false;
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") player.movingRight = false;
+});
+
+// Canvas Tap & Mouse Movement
+canvas.addEventListener("click", handleStartOrAction);
+canvas.addEventListener("mousemove", e => {
+  if (state !== "playing") return;
+  const r = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / r.width;
+  player.x = (e.clientX - r.left) * scaleX;
+});
+
+// Mobile Controls
+const btnL = document.getElementById("m-left");
+const btnR = document.getElementById("m-right");
+const btnF = document.getElementById("m-fire");
+
+btnL.addEventListener("touchstart", e => { e.preventDefault(); player.movingLeft = true; });
+btnL.addEventListener("touchend", e => { e.preventDefault(); player.movingLeft = false; });
+btnR.addEventListener("touchstart", e => { e.preventDefault(); player.movingRight = true; });
+btnR.addEventListener("touchend", e => { e.preventDefault(); player.movingRight = false; });
+btnF.addEventListener("touchstart", e => { e.preventDefault(); handleStartOrAction(); });
+
+// ── Main Loop ──
+let lastTime = performance.now();
+function loop(ts) {
+  requestAnimationFrame(loop);
+  try {
+    const dt = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+    update(dt);
+    draw();
+  } catch(err) {
+    console.error("Galaxy Defender loop recovery:", err);
+  }
+}
+
+initInvaders();
+initShields();
+updateHUD();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
