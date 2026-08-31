@@ -63,14 +63,16 @@
     padding: 0 4px;
   }
 
-  .title-tag {
-    font-size: clamp(16px, 3.5vw, 20px);
+    .title-tag {
+    font-size: clamp(13px, 3.4vw, 17px);
     font-weight: 800;
-    letter-spacing: 3px;
-    background: linear-gradient(135deg, #a5b4fc, #6366f1, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a5b4fc;
+    white-space: nowrap;
+    text-align: center;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .audio-controls {
@@ -306,6 +308,17 @@
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.4); opacity: 0.45; }
     }
+
+  @media (max-width: 540px) {
+    .top-bar { gap: 4px; }
+    .title-tag { font-size: 13px; }
+    .stats-badge { padding: 0 6px; gap: 4px; font-size: 10px; }
+    .stats-badge .lbl { display: none; }
+    #musicTxt, #muteTxt { display: none; }
+    .icon-btn { padding: 0 8px; }
+    .hub-btn { padding: 0 8px; }
+  }
+
 </style>
 </head>
 <body>

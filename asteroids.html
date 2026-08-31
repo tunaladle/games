@@ -212,7 +212,16 @@
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.4); opacity: 0.45; }
     }
-  </style>
+  
+    @media (max-width: 540px) {
+      .hub-btn { left: 8px; top: 10px; padding: 0 8px; }
+      .sound-toggle { right: 8px; top: 10px; padding: 0 8px; }
+      #muteTxt { display: none; }
+      .stats-badge { right: 50px; top: 10px; padding: 0 6px; gap: 4px; font-size: 10px; height: 34px; }
+      .stats-badge .lbl { display: none; }
+    }
+
+</style>
 </head>
 <body>
 
