@@ -675,6 +675,7 @@ function initStatsBadge(pageKey) {
   const liveEl = document.getElementById("live-count");
   const viewEl = document.getElementById("view-count");
 
+  // All-Time Plays Tracking (Session De-duplicated)
   const sessionKey = "session_viewed_" + pageKey;
   const isNewVisit = !sessionStorage.getItem(sessionKey);
   if (isNewVisit) sessionStorage.setItem(sessionKey, "1");
@@ -698,18 +699,27 @@ function initStatsBadge(pageKey) {
     }).catch(() => {});
   }
 
-  const tabId = "tab_" + Math.random().toString(36).substring(2, 9);
+  // Real-Time Live Presence Heartbeat (Mobile-Optimized & Persistent Tab ID)
+  let tabId = sessionStorage.getItem("arcade_tab_id");
+  if (!tabId) {
+    tabId = "t_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+    sessionStorage.setItem("arcade_tab_id", tabId);
+  }
   const presenceStorageKey = "live_presence_" + pageKey;
 
   function updatePresence() {
     try {
       const now = Date.now();
       let presence = JSON.parse(localStorage.getItem(presenceStorageKey) || "{}");
-      presence[tabId] = now;
+      if (document.visibilityState === "hidden") {
+        delete presence[tabId];
+      } else {
+        presence[tabId] = now;
+      }
       let count = 0;
       const clean = {};
       for (const [id, ts] of Object.entries(presence)) {
-        if (now - ts < 10000) {
+        if (now - ts < 6000) {
           clean[id] = ts;
           count++;
         }
@@ -720,7 +730,7 @@ function initStatsBadge(pageKey) {
   }
 
   updatePresence();
-  const heartbeat = setInterval(updatePresence, 3000);
+  const heartbeat = setInterval(updatePresence, 2500);
 
   if (typeof BroadcastChannel !== "undefined") {
     try {
@@ -730,14 +740,17 @@ function initStatsBadge(pageKey) {
     } catch(e) {}
   }
 
-  window.addEventListener("beforeunload", () => {
-    clearInterval(heartbeat);
+  const removePresence = () => {
     try {
       let presence = JSON.parse(localStorage.getItem(presenceStorageKey) || "{}");
       delete presence[tabId];
       localStorage.setItem(presenceStorageKey, JSON.stringify(presence));
     } catch(e) {}
-  });
+  };
+
+  window.addEventListener("pagehide", removePresence);
+  window.addEventListener("beforeunload", removePresence);
+  document.addEventListener("visibilitychange", updatePresence);
 }
 
 function loop() {
