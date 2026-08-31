@@ -1297,31 +1297,35 @@ function initStatsBadge(pageKey) {
   const liveEl = document.getElementById("live-count");
   const viewEl = document.getElementById("view-count");
 
-  // All-Time Plays Tracking (Session De-duplicated)
+  // All-Time Plays Tracking via active Global CounterAPI
   const sessionKey = "session_viewed_" + pageKey;
   const isNewVisit = !sessionStorage.getItem(sessionKey);
   if (isNewVisit) sessionStorage.setItem(sessionKey, "1");
 
-  let localViews = parseInt(localStorage.getItem("view_cnt_" + pageKey) || "0", 10);
+  let localViews = parseInt(localStorage.getItem("view_cnt_" + pageKey) || "1", 10);
   if (isNewVisit) {
     localViews += 1;
     localStorage.setItem("view_cnt_" + pageKey, localViews);
   }
   if (viewEl) viewEl.textContent = Number(localViews).toLocaleString();
 
-  if (location.protocol.startsWith("http")) {
-    const namespace = (location.hostname || "neon_arcade").replace(/[^a-z0-9]/gi, "_").toLowerCase();
-    const url = isNewVisit
-      ? `https://api.counterapi.dev/v1/${namespace}/${pageKey}/up`
-      : `https://api.counterapi.dev/v1/${namespace}/${pageKey}`;
-    fetch(url).then(r => r.json()).then(data => {
-      if (data && typeof data.count === "number" && viewEl) {
-        viewEl.textContent = Number(data.count).toLocaleString();
-      }
-    }).catch(() => {});
-  }
+  // Active Global Sync across Mobile, Laptop & Web
+  const namespace = "neon_arcade_lalatendu";
+  const apiUrl = isNewVisit
+    ? `https://counterapi.com/api/${namespace}/${pageKey}`
+    : `https://counterapi.com/api/${namespace}/${pageKey}?action=get`;
 
-  // Real-Time Live Presence Heartbeat (Mobile-Optimized & Persistent Tab ID)
+  fetch(apiUrl)
+    .then(r => r.json())
+    .then(data => {
+      if (data && typeof data.value === "number" && viewEl) {
+        viewEl.textContent = Number(data.value).toLocaleString();
+        localStorage.setItem("view_cnt_" + pageKey, data.value);
+      }
+    })
+    .catch(() => {});
+
+  // Real-Time Live Presence Heartbeat (Persistent Tab ID & Multi-Tab Sync)
   let tabId = sessionStorage.getItem("arcade_tab_id");
   if (!tabId) {
     tabId = "t_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
@@ -1352,7 +1356,7 @@ function initStatsBadge(pageKey) {
   }
 
   updatePresence();
-  const heartbeat = setInterval(updatePresence, 2500);
+  const heartbeat = setInterval(updatePresence, 2000);
 
   if (typeof BroadcastChannel !== "undefined") {
     try {
