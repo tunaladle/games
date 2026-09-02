@@ -625,7 +625,8 @@ function setSpeed(){
   balls[0].vy=-baseSpd*Math.cos(angle);
 }
 
-function handleStartOrLaunch(){
+function handleStartOrLaunch() {
+  if (!gameRunning || gameOverState) recordPlay("bricks");
   resumeAC();
   if(state==='over'){ score=0; lives=3; levelNum=1; updateHUD(); powerups=[]; buildBricks(); resetBall(); return; }
   if(state==='paused'){ state='playing'; return; }
@@ -675,11 +676,10 @@ function initStatsBadge(pageKey) {
   const liveEl = document.getElementById("live-count");
   const viewEl = document.getElementById("view-count");
 
-  // ── 1. Total Plays: Instant Local Increment + Global Sync ──
+  // ── 1. Total Plays: Read-only on page load (DO NOT increment on refresh) ──
   const storageKey = "arcade_plays_" + pageKey;
   let currentPlays = parseInt(localStorage.getItem(storageKey) || "0", 10);
   if (currentPlays < 1) {
-    // Initial seeded base count per game so it looks like an active arcade
     const seedMap = {
       "hub_home": 142,
       "asteroids": 86,
@@ -690,25 +690,9 @@ function initStatsBadge(pageKey) {
       "trash_toss": 78
     };
     currentPlays = seedMap[pageKey] || 50;
+    localStorage.setItem(storageKey, currentPlays);
   }
-  // Increment on every load
-  currentPlays += 1;
-  localStorage.setItem(storageKey, currentPlays);
   if (viewEl) viewEl.textContent = currentPlays.toLocaleString();
-
-  // Try global counterapi sync in background
-  if (navigator.onLine) {
-    fetch(`https://counterapi.com/api/neon_arcade_prod/${pageKey}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data && typeof data.value === "number" && viewEl) {
-          const synced = Math.max(currentPlays, data.value);
-          viewEl.textContent = synced.toLocaleString();
-          localStorage.setItem(storageKey, synced);
-        }
-      })
-      .catch(() => {});
-  }
 
   // ── 2. Real-Time Live Presence (Local Multi-Tab + Dynamic Traffic Pulse) ──
   let tabId = sessionStorage.getItem("arcade_tab_id");
@@ -717,9 +701,7 @@ function initStatsBadge(pageKey) {
     sessionStorage.setItem("arcade_tab_id", tabId);
   }
   const presenceKey = "live_peers_" + pageKey;
-
-  // Stable seed offset per game so different games have slightly different live counts
-  const gameSeed = (pageKey.charCodeAt(0) + (pageKey.charCodeAt(1) || 0)) % 3; // 0, 1, or 2
+  const gameSeed = (pageKey.charCodeAt(0) + (pageKey.charCodeAt(1) || 0)) % 3;
 
   function updateLiveCount() {
     const now = Date.now();
@@ -728,14 +710,12 @@ function initStatsBadge(pageKey) {
       localPeers = JSON.parse(localStorage.getItem(presenceKey) || "{}");
     } catch(e) {}
 
-    // Register this active tab
     if (document.visibilityState !== "hidden") {
       localPeers[tabId] = now;
     } else {
       delete localPeers[tabId];
     }
 
-    // Clean up stale tabs older than 5s
     let realTabsCount = 0;
     const cleanPeers = {};
     for (const [id, ts] of Object.entries(localPeers)) {
@@ -748,10 +728,8 @@ function initStatsBadge(pageKey) {
       localStorage.setItem(presenceKey, JSON.stringify(cleanPeers));
     } catch(e) {}
 
-    // Live count = (Real active local tabs) + (Dynamic community presence pulse)
-    // Organic gentle fluctuation between (1 + tabs) and (3 + tabs)
-    const timeCycle = Math.floor(now / 15000); // changes every 15s
-    const pulseOffset = (timeCycle + gameSeed) % 3; // 0, 1, or 2
+    const timeCycle = Math.floor(now / 15000);
+    const pulseOffset = (timeCycle + gameSeed) % 3;
     const totalLive = Math.max(1, realTabsCount + pulseOffset);
 
     if (liveEl) liveEl.textContent = totalLive;
@@ -760,7 +738,6 @@ function initStatsBadge(pageKey) {
   updateLiveCount();
   const liveTimer = setInterval(updateLiveCount, 2500);
 
-  // Instant multi-tab broadcast sync
   if (typeof BroadcastChannel !== "undefined") {
     try {
       const bc = new BroadcastChannel("arcade_presence_" + pageKey);
@@ -769,7 +746,6 @@ function initStatsBadge(pageKey) {
     } catch(e) {}
   }
 
-  // Cleanup on tab close/unload
   const cleanup = () => {
     clearInterval(liveTimer);
     try {
@@ -784,14 +760,46 @@ function initStatsBadge(pageKey) {
   document.addEventListener("visibilitychange", updateLiveCount);
 }
 
-function loop() {
-  update();
-  draw();
-  requestAnimationFrame(loop);
-}
+function recordPlay(pageKey) {
+  const storageKey = "arcade_plays_" + pageKey;
+  let currentPlays = parseInt(localStorage.getItem(storageKey) || "0", 10);
+  if (currentPlays < 1) {
+    const seedMap = {
+      "hub_home": 142,
+      "asteroids": 86,
+      "bricks": 94,
+      "snake": 128,
+      "space_invaders": 110,
+      "tetris": 175,
+      "trash_toss": 78
+    };
+    currentPlays = seedMap[pageKey] || 50;
+  }
+  currentPlays += 1;
+  localStorage.setItem(storageKey, currentPlays);
+  const viewEl = document.getElementById("view-count");
+  if (viewEl) viewEl.textContent = currentPlays.toLocaleString();
 
-buildBricks();
-resetBall();
+  if (pageKey !== "hub_home") {
+    let hubPlays = parseInt(localStorage.getItem("arcade_plays_hub_home") || "0", 10);
+    if (hubPlays > 0) {
+      localStorage.setItem("arcade_plays_hub_home", hubPlays + 1);
+    }
+  }
+
+  if (navigator.onLine) {
+    fetch(`https://counterapi.com/api/neon_arcade_prod/${pageKey}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data && typeof data.value === "number") {
+          const synced = Math.max(currentPlays, data.value);
+          if (viewEl) viewEl.textContent = synced.toLocaleString();
+          localStorage.setItem(storageKey, synced);
+        }
+      })
+      .catch(() => {});
+  }
+}
 initStatsBadge("bricks");
 loop();
 </script>
